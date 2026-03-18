@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Market | Безопасная покупка скинов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Aura Market</h1>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li class="MainBuy"><a href="index.html">Главная</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+        <input type="text" class="Buy_successful" placeholder="Введите трейд-ссылку" />
+        <a href="buy.html"><button class="btn-buy-confirm">Подтвердить покупку</button></a>
+
+</body>
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg?.initDataUnsafe?.user) {
+    const saved = localStorage.getItem(`steam_trade_${tg.initDataUnsafe.user.id}`);
+    if (saved) {
+        document.querySelector('input').value = saved;
+    }
+}</script>
+</html>
