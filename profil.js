@@ -1,80 +1,62 @@
-// profil.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const tg = window.Telegram?.WebApp;
-    let user = null;
+    const displayNameEl = document.getElementById("displayName");
+    const telegramInfoEl = document.getElementById("telegramInfo");
+    const avatarEl = document.getElementById("avatar");
+    const messageEl = document.getElementById("message");
 
-    if (tg) {
-        tg.ready();
-        tg.expand(); // растягиваем на весь экран
-
-        user = tg.initDataUnsafe?.user;
-
-        if (user) {
-            // Аватар
-            let photo = user.photo_url;
-            if (!photo) {
-                // fallback (работает не у всех, но попробовать стоит)
-                photo = `https://t.me/i/userpic/320/${user.id}.jpg`;
-            }
-
-            const avatarEl = document.getElementById("avatar");
-            avatarEl.src = photo;
-            avatarEl.onerror = () => {
-                avatarEl.src = "https://via.placeholder.com/120?text=No+photo";
-            };
-
-            // Имя / ник
-            let name = user.username ? `@${user.username}` : `${user.first_name} ${user.last_name || ""}`.trim();
-            if (!name) name = "Telegram User";
-
-            document.getElementById("displayName").textContent = name;
-            document.getElementById("telegramInfo").textContent = `ID: ${user.id} • ${user.is_premium ? "Premium" : ""}`;
-
-            // Загружаем сохранённую trade-ссылку (ключ уникальный для каждого tg id)
-            const savedLink = localStorage.getItem(`steam_trade_${user.id}`);
-            if (savedLink) {
-                document.getElementById("tradeLink").value = savedLink;
-                document.getElementById("message").textContent = "Ссылка уже сохранена";
-                document.getElementById("message").style.color = "#a3d5ff";
-            }
-        } else {
-            document.getElementById("displayName").textContent = "Не удалось получить данные пользователя";
-            document.getElementById("message").textContent = "Запустите через Telegram → Mini App";
-            document.getElementById("message").style.color = "#ff6b6b";
-        }
-    } else {
-        // не в Telegram
-        document.getElementById("displayName").textContent = "Это Telegram Mini App";
-        document.getElementById("avatar").src = "https://via.placeholder.com/120?text=WebApp";
-        document.getElementById("message").textContent = "Откройте через бота в Telegram";
-        document.getElementById("message").style.color = "#ffcc00";
+    if (!tg) {
+        displayNameEl.textContent = "НЕ в Telegram Web App";
+        messageEl.textContent = "Откройте через бота в Telegram";
+        messageEl.style.color = "orange";
+        console.error("window.Telegram.WebApp НЕ существует");
+        return;
     }
 
-    // Сохранение trade link
-    document.getElementById("saveBtn").addEventListener("click", () => {
-        const link = document.getElementById("tradeLink").value.trim();
-        const msgEl = document.getElementById("message");
+    tg.ready();
+    tg.expand();
 
-        if (!link) {
-            msgEl.textContent = "Введите ссылку";
-            msgEl.style.color = "#ff6b6b";
-            return;
-        }
+    console.log("Telegram WebApp версия:", tg.version);
+    console.log("Полный initDataUnsafe:", JSON.stringify(tg.initDataUnsafe, null, 2));
+    console.log("initDataUnsafe.user:", tg.initDataUnsafe?.user);
 
-        if (!link.includes("steamcommunity.com/tradeoffer/new/")) {
-            msgEl.textContent = "Это не похоже на Steam Trade ссылку";
-            msgEl.style.color = "#ffcc00";
-            return;
-        }
+    const user = tg.initDataUnsafe?.user;
 
-        if (user?.id) {
-            localStorage.setItem(`steam_trade_${user.id}`, link);
-            msgEl.textContent = "Ссылка сохранена!";
-            msgEl.style.color = "#4caf50";
-        } else {
-            msgEl.textContent = "Сохранение недоступно вне Telegram";
-            msgEl.style.color = "#ff6b6b";
-        }
-    });
+    if (!user || Object.keys(user).length === 0) {
+        displayNameEl.textContent = "Пользователь не получен";
+        telegramInfoEl.textContent = "initDataUnsafe.user пустой";
+        messageEl.textContent = "Данные пользователя недоступны. Как запущен Mini App?";
+        messageEl.style.color = "red";
+        return;
+    }
+
+    // Аватар
+    let photo = user.photo_url;
+    console.log("photo_url из Telegram:", photo);
+
+    if (!photo) {
+        photo = `https://t.me/i/userpic/320/${user.id}.jpg`; // fallback
+        console.log("Используем fallback аватар:", photo);
+    }
+
+    avatarEl.src = photo;
+    avatarEl.onerror = () => {
+        avatarEl.src = "https://via.placeholder.com/120?text=No+photo";
+        console.warn("Аватар не загрузился даже fallback");
+    };
+
+    // Имя
+    let name = user.username ? `@${user.username}` : `${user.first_name || ''} ${user.last_name || ''}`.trim();
+    if (!name) name = "Без имени";
+
+    displayNameEl.textContent = name;
+    telegramInfoEl.textContent = `ID: ${user.id} • Premium: ${user.is_premium ? 'Да' : 'Нет'}`;
+
+    // Trade link (оставляем как было)
+    const savedLink = localStorage.getItem(`steam_trade_${user.id}`);
+    if (savedLink) {
+        document.getElementById("tradeLink").value = savedLink;
+        messageEl.textContent = "Ссылка уже сохранена";
+        messageEl.style.color = "#a3d5ff";
+    }
 });
