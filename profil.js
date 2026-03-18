@@ -1,26 +1,65 @@
-// Инициализация Web App
-const tg = window.Telegram.WebApp;
-tg.ready(); // Сообщаем, что приложение готово
+document.addEventListener("DOMContentLoaded", function () {
+    const tg = window.Telegram?.WebApp;
+    const messageEl = document.getElementById("message");
 
-// Получение данных пользователя
-const user = tg.initDataUnsafe.user;
-
-if (user) {
-    const userId = user.id; // Telegram ID
-    const firstName = user.first_name; // Имя
-    const lastName = user.last_name || ''; // Фамилия (если есть)
-    const username = user.username || ''; // Юзернейм (если есть)
-    const photoUrl = user.photo_url || ''; // Ссылка на аватарку
-
-    // Вывод данных на страницу
-    console.log(user);
-    document.getElementById('user-id').innerText = userId;
-    document.getElementById('user-name').innerText = `${firstName} ${lastName}`;
-    if (photoUrl) {
-        document.getElementById('user-avatar').src = photoUrl;
+    if (!tg) {
+        document.getElementById("displayName").textContent = "НЕ в Telegram Mini App";
+        document.getElementById("telegramInfo").textContent = "Откройте через бота";
+        messageEl.textContent = "window.Telegram.WebApp не найден";
+        messageEl.style.color = "orange";
+        return;
     }
-} else {
-    console.log("Данные пользователя не найдены. Вы запустили Web App не через Telegram?");
-}
 
+    tg.ready();
+    tg.expand();
+
+    const user = tg.initDataUnsafe?.user;
+
+    console.log("Полный initDataUnsafe:", tg.initDataUnsafe);
+    console.log("User объект:", user);
+
+    if (!user || !user.id) {
+        document.getElementById("displayName").textContent = "Данные пользователя не получены";
+        document.getElementById("telegramInfo").textContent = "ID: — (проверьте запуск Mini App)";
+        messageEl.textContent = "User пустой. Запустите через Main Mini App или меню-кнопку бота.";
+        messageEl.style.color = "red";
+        return;
+    }
+
+    // Аватар
+    let photo = user.photo_url;
+    if (!photo) {
+        photo = `https://t.me/i/userpic/320/${user.id}.jpg`; // fallback — часто работает
+    }
+    const avatarEl = document.getElementById("avatar");
+    avatarEl.src = photo;
+    avatarEl.onerror = () => avatarEl.src = "https://via.placeholder.com/120?text=No+photo";
+
+    // Имя / ник
+    let name = user.username ? `@${user.username}` : `${user.first_name || ''} ${user.last_name || ''}`.trim();
+    document.getElementById("displayName").textContent = name || "Без имени";
+
+    // ID и премиум
+    document.getElementById("telegramInfo").textContent = `ID: ${user.id} • Premium: ${user.is_premium ? 'Да' : 'Нет'}`;
+
+    // Trade link — загрузка сохранённой
+    const savedLink = localStorage.getItem(`steam_trade_${user.id}`);
+    if (savedLink) {
+        document.getElementById("tradeLink").value = savedLink;
+        messageEl.textContent = "Ссылка уже сохранена";
+        messageEl.style.color = "#4caf50";
+    }
+
+    // Сохранение
+    document.getElementById("saveBtn").addEventListener("click", function () {
+        const link = document.getElementById("tradeLink").value.trim();
+        if (!link.includes("steamcommunity.com/tradeoffer/new/")) {
+            messageEl.textContent = "Неправильный формат ссылки";
+            messageEl.style.color = "orange";
+            return;
+        }
+        localStorage.setItem(`steam_trade_${user.id}`, link);
+        messageEl.textContent = "Ссылка сохранена!";
+        messageEl.style.color = "#4caf50";
+    });
 });
