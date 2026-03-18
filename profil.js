@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Аватар
-    let photo = user.photo_url;
+    let photo = user.photo_url || `https://t.me/i/userpic/320/${user.id}.jpg` || "https://via.placeholder.com/120?text=User";
     console.log("photo_url из Telegram:", photo);
 
     if (!photo) {
