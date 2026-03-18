@@ -59,4 +59,17 @@ document.addEventListener("DOMContentLoaded", () => {
         messageEl.textContent = "Ссылка уже сохранена";
         messageEl.style.color = "#a3d5ff";
     }
+    if (!user || Object.keys(user).length === 0) {
+    displayNameEl.textContent = "User данные НЕ пришли";
+    telegramInfoEl.textContent = "initDataUnsafe.user пустой или undefined";
+    messageEl.innerHTML = `
+        <strong>Отладка:</strong><br>
+        WebApp версия: ${tg.version || 'нет'}<br>
+        initDataUnsafe существует? ${!!tg.initDataUnsafe}<br>
+        Полный initDataUnsafe: <pre style="white-space:pre-wrap; font-size:0.9rem; background:#000; padding:10px; border-radius:8px;">${JSON.stringify(tg.initDataUnsafe, null, 2)}</pre>
+    `;
+    messageEl.style.color = "orange";
+    console.log("Отладка initDataUnsafe:", tg.initDataUnsafe);
+    return;
+}
 });
