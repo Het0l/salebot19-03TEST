@@ -1,46 +1,121 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aura Market</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>User Info</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacOSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+      margin: 0;
+      padding: 20px;
+      font-size: 17px;
+      line-height: 1.5;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+    .field {
+      margin: 12px 0;
+    }
+    .label {
+      font-weight: bold;
+      color: var(--tg-theme-hint-color, #888);
+      display: inline-block;
+      min-width: 110px;
+    }
+    .photo {
+      width: 96px;
+      height: 96px;
+      border-radius: 48px;
+      object-fit: cover;
+      margin: 16px 0;
+      background: #eee;
+    }
+    .not-available {
+      color: #999;
+      font-style: italic;
+    }
+    #error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>Aura Market</h1>
-                </div>
-                <nav>
-                    <ul>
-                        <li><a href="index.html">Назад</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </header>
+  <h1>Информация о тебе</h1>
 
-    <section class="register">
-        <div class="user-profile">
-            <img id="userPhoto" src="https://via.placeholder.com/80?text=..." alt="Аватар" class="user-avatar">
-            <div class="user-info">
-                <div id="userName" class="user-name">Загрузка...</div>
-                <div id="userUsername" class="user-username">@username</div>
-                <div id="userId" class="user-id">ID: —</div>
-            </div>
-        </div>
+  <div id="photo-container"></div>
 
-        <!-- Отладочный блок (можно удалить позже) -->
-        <div id="debugInfo" style="margin: 20px; padding: 16px; background: rgba(0,0,0,0.8); color: #0f0; font-family: monospace; font-size: 13px; border-radius: 12px; white-space: pre-wrap; max-height: 300px; overflow: auto;">
-            DEBUG INFO<br>Ожидание данных...
-        </div>
-    </section>
+  <div class="field">
+    <span class="label">ID:</span>
+    <span id="user-id">—</span>
+  </div>
 
-    <script src="register.js"></script>
+  <div class="field">
+    <span class="label">Имя:</span>
+    <span id="first-name">—</span>
+  </div>
+
+  <div class="field">
+    <span class="label">Фамилия:</span>
+    <span id="last-name">—</span>
+  </div>
+
+  <div class="field">
+    <span class="label">Username:</span>
+    <span id="username">—</span>
+  </div>
+
+  <div id="error"></div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();           // обязательно вызвать
+    tg.expand();          // опционально — развернуть на весь экран
+
+    try {
+      const user = tg.initDataUnsafe?.user;
+
+      if (!user || !user.id) {
+        document.getElementById('error').textContent = 
+          "Данные пользователя недоступны. Возможно, Mini App запущен не через бота.";
+        throw new Error("Нет user объекта");
+      }
+
+      // Заполняем поля
+      document.getElementById('user-id').textContent     = user.id;
+      document.getElementById('first-name').textContent  = user.first_name || "—";
+      document.getElementById('last-name').textContent   = user.last_name  || "—";
+      document.getElementById('username').textContent    = 
+        user.username ? `@${user.username}` : "—";
+
+      // Фото, если есть
+      if (user.photo_url) {
+        const img = document.createElement('img');
+        img.src = user.photo_url;
+        img.className = 'photo';
+        img.alt = "Аватар";
+        document.getElementById('photo-container').appendChild(img);
+      } else {
+        document.getElementById('photo-container').innerHTML = 
+          '<div class="not-available">Фото отсутствует</div>';
+      }
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById('error').textContent = 
+        "Ошибка при получении данных: " + err.message;
+    }
+
+    // Для отладки можешь вывести весь объект
+    // console.log("initDataUnsafe:", tg.initDataUnsafe);
+  </script>
+
 </body>
 </html>
