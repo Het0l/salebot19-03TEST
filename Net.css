@@ -2,15 +2,4 @@
     text-align: center;
     color: white;
 }
-.nav {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
 
-    font-size: 2.5rem;
-    color: #4a9eff;
-
-    background: linear-gradient(to right, #fff, #a3d5ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-}
