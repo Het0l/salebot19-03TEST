@@ -2,3 +2,22 @@
     text-align: center;
     color: white;
 }
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.logo i {
+    font-size: 2.5rem;
+    color: #4a9eff;
+}
+
+.logo h1 {
+    font-size: 2.2rem;
+    background: linear-gradient(to right, #fff, #a3d5ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
