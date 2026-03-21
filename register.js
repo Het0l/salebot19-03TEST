@@ -27,4 +27,23 @@ tg.onEvent('ready', function () {
         document.getElementById("userName").style.color = "orange";
         console.log("initDataUnsafe →", tg.initDataUnsafe); // ← для отладки
     }
+    function showUserProfile() {
+    const user = tg.initDataUnsafe?.user;
+    if (user && user.id) {
+        // ... тот же код заполнения полей ...
+        console.log("Пользователь загружен:", user.id, user.username);
+    } else {
+        console.warn("Пользователь ещё не доступен", tg.initDataUnsafe);
+        // можно поставить таймер на повторную попытку 1 раз
+        setTimeout(showUserProfile, 400);
+    }
+}
+
+if (tg.initDataUnsafe?.user) {
+    showUserProfile();
+} else {
+    tg.ready();
+    tg.onEvent('ready', showUserProfile);
+    setTimeout(showUserProfile, 300); // запасной вариант
+}
 });
