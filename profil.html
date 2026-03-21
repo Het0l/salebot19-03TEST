@@ -6,6 +6,7 @@
     <title>Aura Market</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <header>
@@ -26,6 +27,14 @@
         </div>
     </header> 
 <section class="register">
+    <div class="user-profile">
+        <img id="userPhoto" src="" alt="Аватар" class="user-avatar" onerror="this.src='https://via.placeholder.com/80?text=нет+фото';">
+        <div class="user-info">
+            <div id="userName" class="user-name">Загрузка...</div>
+            <div id="userUsername" class="user-username">@username</div>
+            <div id="userId" class="user-id">ID: —</div>
+        </div>
+    </div>
     <div class="container">
         <h2>Регистрация</h2>
 
