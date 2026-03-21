@@ -539,4 +539,41 @@ footer {
     margin-left: auto;
     font-size: 16px;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--tg-theme-bg-color, #ffffff);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--tg-theme-button-color, #0088cc);
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: var(--tg-theme-text-color, #000);
+}
+
+.user-username {
+    font-size: 1em;
+    color: var(--tg-theme-hint-color, #888);
+}
+
+.user-id {
+    font-size: 0.9em;
+    color: var(--tg-theme-hint-color, #888);
+    margin-top: 4px;
 }
