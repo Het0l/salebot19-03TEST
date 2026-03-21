@@ -36,4 +36,42 @@
         </div>
     </div>
 </section>
+<div id="debug" style="padding:16px; background:#000; color:#0f0; font-family:monospace; white-space:pre-wrap; margin:16px; border-radius:8px;">
+DEBUG: ждём initData...
+</div>
 
+<script>
+  const debug = document.getElementById('debug');
+  
+  function log(s) {
+    debug.innerHTML += s + '\n';
+  }
+
+  log('Telegram.WebApp существует: ' + !!window.Telegram?.WebApp);
+
+  if (window.Telegram?.WebApp) {
+    const tg = Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    log('Версия: ' + tg.version);
+    log('Платформа: ' + tg.platform);
+    log('initData: ' + (tg.initData ? 'есть (' + tg.initData.length + ' символов)' : 'пусто'));
+    log('initDataUnsafe: ' + (tg.initDataUnsafe ? 'есть' : 'undefined'));
+
+    if (tg.initDataUnsafe) {
+      log(JSON.stringify(tg.initDataUnsafe, null, 2));
+      
+      if (tg.initDataUnsafe.user) {
+        log('USER НАЙДЕН!');
+        log('ID: ' + tg.initDataUnsafe.user.id);
+        log('first_name: ' + tg.initDataUnsafe.user.first_name);
+        log('username: ' + (tg.initDataUnsafe.user.username || 'нет'));
+      } else {
+        log('user → отсутствует');
+      }
+    }
+  } else {
+    log('ОШИБКА: Telegram.WebApp не загрузился');
+  }
+</script>
